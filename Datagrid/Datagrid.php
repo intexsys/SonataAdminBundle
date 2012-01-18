@@ -101,7 +101,6 @@ class Datagrid implements DatagridInterface
 
         $this->formBuilder->add('_sort_by', 'hidden');
         $this->formBuilder->add('_sort_order', 'hidden');
-        $this->formBuilder->add('_page', 'hidden');
 
         $this->form = $this->formBuilder->getForm();
         $this->form->bind($this->values);
