@@ -79,6 +79,8 @@ file that was distributed with this source code.
 
             {{ form_rest(form) }}
 
+            <input type='hidden' name='validate_field' id='validate_url' value="{{ admin.generateUrl('validate') }}" />
+
             <div class="actions">
                 {% if app.request.isxmlhttprequest %}
                     {% if admin.id(object) %}
@@ -102,5 +104,34 @@ file that was distributed with this source code.
                 {% endif %}
             </div>
         </form>
+
+        <script type="text/javascript">
+            $(document).ready(function($){
+                $('form input, textarea').blur(function(e) {
+                    var id = $(this).attr('id');
+                    var input = $(this);
+                    $.post(
+                        $('input#validate_url').val(),
+                        { value: $(this).val(), field: $(this).attr('name') },
+                        function(data) {
+                            if (data['result'] == 'ok'){
+                                console.log(data['result']);
+                            }
+                            else {
+                                var parentDiv = input.parent();
+                                var mainDiv = parentDiv.parent().addClass('error');
+                                var errorDiv = mainDiv.find('div.sonata-ba-field-error-messages');
+                                if (errorDiv.length > 0) {
+                                    errorDiv.text(data['errorMessage']);
+                                }
+                                else {
+                                    parentDiv.append('<div class="sonata-ba-field-error-messages">'+data['errorMessage']+'</div>');
+                                }
+                            }
+                        }
+                    );
+                });
+            });
+        </script>
     {% endif%}
 {% endblock %}

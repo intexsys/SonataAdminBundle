@@ -526,4 +526,45 @@ class CRUDController extends Controller
             'elements' => $this->admin->getShow(),
         ));
     }
+
+    /**
+     * Validate field on edit form and return the result
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function validateAction()
+    {
+        if ($this->get('request')->isXmlHttpRequest()) {
+            $value = $this->get('request')->request->get('value');
+            $field = $this->get('request')->request->get('field');
+
+            preg_match_all('/\[(.*?)\]/i', $field, $regs);
+            $field = $regs[1][0];
+
+            $validator = $this->admin->getValidator();
+
+            $violations = array();
+            $class_metadata = $validator->getMetadataFactory()->getClassMetadata($this->admin->getClass());
+
+            if (array_key_exists($field, $class_metadata->members)) {
+                $field_members = $class_metadata->members[$field];
+                foreach ($field_members as $member) {
+                    foreach ($member->constraintsByGroup as $group_name => $group) {
+                        $violations = $validator->validatePropertyValue($this->admin->getClass(), $field, $value, $group_name);
+
+                        if(count($violations)) {
+                            return $this->renderJson(array(
+                                'result' => 'error',
+                                'errorMessage' => $violations[0]->getMessage()
+                            ));
+                        }
+                    }
+                }
+            }
+
+            return $this->renderJson(array(
+                'result' => 'ok',
+            ));
+        }
+    }
 }
