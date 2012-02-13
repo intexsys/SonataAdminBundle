@@ -2348,4 +2348,30 @@ abstract class Admin implements AdminInterface, DomainObjectInterface
     {
         return $this->labelTranslatorStrategy;
     }
+
+    /**
+     * Return info string about active filters
+     *
+     * @return string
+     */
+    public function getActiveFilters()
+    {
+        $result = array();
+
+        $filters = $this->datagrid->getFilters();
+        $form_view = $this->datagrid->getForm()->createView();
+
+        foreach ($filters as $filter) {
+            $name = $filter->getName();
+            $value = $filter->getValue();
+
+            if ($value['type'] && $value['value']) {
+                $type_choices = $form_view->getChild($name)->getChild('type')->getVars();
+                $type_choices = $type_choices['choices'];
+                $result[$name] = $filter->getLabel() . ' (' . $type_choices[$value['type']] . '): ' . $value['value'];
+            }
+        }
+
+        return $result ? implode(', ' , $result) : 'Default filter';
+    }
 }
