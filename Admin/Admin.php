@@ -2436,12 +2436,23 @@ abstract class Admin implements AdminInterface, DomainObjectInterface
 
         foreach ($filters as $filter) {
             $name = $filter->getName();
-            $value = $filter->getValue();
+            $filter_value = $filter->getValue();
 
-            if ($value['type'] && $value['value']) {
+            if ($filter_value['type'] && $filter_value['value']) {
+                $render_settings = $filter->getRenderSettings();
+
+                if ($render_settings[1]['field_type'] == 'entity') {
+                    $value_choices = $form_view->getChild($name)->getChild('value')->getVars();
+                    $value_choices = $value_choices['choices'];
+                    $value = $value_choices[$filter_value['value']];
+                }
+                else {
+                    $value = $filter_value['value'];
+                }
+
                 $type_choices = $form_view->getChild($name)->getChild('type')->getVars();
                 $type_choices = $type_choices['choices'];
-                $result[$name] = $filter->getLabel() . ' (' . $type_choices[$value['type']] . '): ' . $value['value'];
+                $result[$name] = $filter->getLabel() . ' (' . $type_choices[$filter_value['type']] . '): ' . $value;
             }
         }
 
