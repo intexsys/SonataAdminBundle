@@ -2437,8 +2437,12 @@ abstract class Admin implements AdminInterface, DomainObjectInterface
         foreach ($filters as $filter) {
             $name = $filter->getName();
             $filter_value = $filter->getValue();
+            $parent_association_mapping = $this->getParentAssociationMapping();
 
-            if ($filter_value['type'] && $filter_value['value']) {
+            if( isset($parent_association_mapping) && $name == $parent_association_mapping ) {
+                $result[$name] = $filter->getLabel() . ' : ' . $filter_value['value'];
+            }
+            elseif ($filter_value['type'] && $filter_value['value']) {
                 $render_settings = $filter->getRenderSettings();
 
                 if ($render_settings[1]['field_type'] == 'entity') {
