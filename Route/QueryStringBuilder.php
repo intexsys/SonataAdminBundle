@@ -38,10 +38,16 @@ class QueryStringBuilder implements RouteBuilderInterface
         $collection->add('edit');
         $collection->add('delete');
         $collection->add('show');
+        $collection->add('export');
 
         if ($this->manager->hasReader($admin->getClass())) {
             $collection->add('history', '/audit-history');
             $collection->add('history_view_revision', '/audit-history-view');
+        }
+
+        // an admin can have only one level of nested child
+        if ($admin->getParent()) {
+            return;
         }
 
         // add children urls

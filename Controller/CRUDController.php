@@ -18,6 +18,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sonata\AdminBundle\Exception\ModelManagerException;
+use Symfony\Component\HttpFoundation\Request;
 
 class CRUDController extends Controller
 {
@@ -98,7 +99,13 @@ class CRUDController extends Controller
             $rootAdmin = $rootAdmin->getParent();
         }
 
-        $rootAdmin->setRequest($this->container->get('request'));
+        $request = $this->container->get('request');
+
+        $rootAdmin->setRequest($request);
+
+        if ($request->get('uniqid')) {
+            $this->admin->setUniqid($request->get('uniqid'));
+        }
     }
 
     /**
@@ -525,6 +532,23 @@ class CRUDController extends Controller
             'object'   => $object,
             'elements' => $this->admin->getShow(),
         ));
+    }
+
+    /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function exportAction(Request $request)
+    {
+        $format = $request->get('format');
+
+        $filename = sprintf('export_%s_%s.%s',
+            strtolower(substr($this->admin->getClass(), strripos($this->admin->getClass(), '\\') + 1)),
+            date('Y_m_d_H_i_s', strtotime('now')),
+            $format
+        );
+
+        return $this->get('sonata.admin.exporter')->getResponse($format, $filename, $this->admin->getDataSourceIterator());
     }
 
     /**
