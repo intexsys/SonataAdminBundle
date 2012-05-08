@@ -11,14 +11,15 @@
 
 namespace Sonata\AdminBundle\Form\Type;
 
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormTypeInterface;
-use Symfony\Component\Form\FormBuilder;
-
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType as FormChoiceType;
 use Symfony\Component\Translation\TranslatorInterface;
 
-class DateTimeRangeType extends AbstractType
+class EqualType extends FormChoiceType
 {
+    const TYPE_IS_EQUAL = 1;
+
+    const TYPE_IS_NOT_EQUAL = 2;
+
     protected $translator;
 
     /**
@@ -32,25 +33,15 @@ class DateTimeRangeType extends AbstractType
     /**
      * {@inheritDoc}
      */
-    public function buildForm(FormBuilder $builder, array $options)
-    {
-        $builder->add('start', 'datetime', array_merge(array('required' => false), $options['field_options']));
-        $builder->add('end', 'datetime', array_merge(array('required' => false), $options['field_options']));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getDefaultOptions(array $options)
     {
-        return $options;
-    }
+        $options = parent::getDefaultOptions($options);
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
-    {
-        return 'sonata_type_datetime_range';
+        $options['choices'] = array(
+            self::TYPE_IS_EQUAL     => $this->translator->trans('label_type_equals', array(), 'SonataAdminBundle'),
+            self::TYPE_IS_NOT_EQUAL => $this->translator->trans('label_type_not_equals', array(), 'SonataAdminBundle'),
+        );
+
+        return $options;
     }
 }

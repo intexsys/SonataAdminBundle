@@ -40,7 +40,7 @@ file that was distributed with this source code.
                                     {% set sortable = false %}
                                     {% if field_description.options.sortable is defined and field_description.options.sortable%}
                                         {% set sortable             = true %}
-                                        {% set current              = admin.datagrid.values._sort_by == field_description.options.sortable %}
+                                        {% set current              = admin.datagrid.values._sort_by == field_description.name %}
                                         {% set sort_parameters      = admin.modelmanager.sortparameters(field_description, admin.datagrid) %}
                                         {% set sort_active_class    = current ? 'sonata-ba-list-field-order-active' : '' %}
                                         {% set sort_by              = current ? admin.datagrid.values._sort_order : field_description.options._sort_order %}
@@ -73,9 +73,10 @@ file that was distributed with this source code.
 
                 {% block table_footer %}
                     <tr>
-                        <th colspan="{{ admin.list.elements|length - 1 }}">
+                        <th colspan="{{ admin.list.elements|length - (app.request.isXmlHttpRequest ? 2 : 1) }}">
                             {{ admin.datagrid.pager.page }} / {{ admin.datagrid.pager.lastpage }}
-                            {% if admin.isGranted("EXPORT") %}
+
+                            {% if admin.getExportFormats()|length > 0 %}
                                 -
                                 {{ "label_export_download"|trans({}, "SonataAdminBundle") }}
                                 {% for format in admin.getExportFormats() %}
