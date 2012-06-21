@@ -1,10 +1,26 @@
 Installation
 ============
-
 Prerequisites
 -------------
+PHP 5.3 and Symfony 2 are needed to make this bundle work ; there are also some
+Sonata dependencies that need to be installed and configured beforehand :
 
-**Translations.**
+    - `SonataCacheBundle <http://sonata-project.org/bundles/cache>`_
+    - `SonataBlockBundle <http://sonata-project.org/bundles/block>`_
+    - `SonatajQueryBundle <https://github.com/sonata-project/SonatajQueryBundle>`_
+    - `KnpMenuBundle <https://github.com/KnpLabs/KnpMenuBundle/blob/master/Resources/doc/index.md#installation>`_ (Version 1.1.*)
+    - `Exporter <https://github.com/sonata-project/exporter>`_
+
+You will need to install those in their 2.0 branches (or master if they don't
+have a similar branch). Follow also their configuration step ; you will find
+everything you need in their installation chapter.
+
+.. note::
+    If a dependency is already installed somewhere in your project or in
+    another dependency, you won't need to install it again.
+
+Translations
+~~~~~~~~~~~~
 If you wish to use default translation texts provided in this bundle, you have
 to make sure you have translator enabled in your config.
 
@@ -17,50 +33,36 @@ to make sure you have translator enabled in your config.
 
 Installation
 ------------
-
-Download SonataAdminBundle and its dependencies to the ``vendor`` directory. You
-can use the Symfony's vendor script for the automated procces. Add the following
-in your ``deps`` file:
+Alter your deps file, and add these lines :
 
 .. code-block:: ini
 
-  [SonataAdminBundle]
-      git=git://github.com/sonata-project/SonataAdminBundle.git
-      target=/bundles/Sonata/AdminBundle
-      version=origin/2.0
+    [SonataAdminBundle]
+        git=git://github.com/sonata-project/SonataAdminBundle.git
+        target=/bundles/Sonata/AdminBundle
+        version=origin/2.0
 
-  [SonataBlockBundle]
-      git=git://github.com/sonata-project/SonataBlockBundle.git
-      target=/bundles/Sonata/BlockBundle
-      version=origin/2.0
+You will also need to alter your ``app/config/config.yml`` file :
 
-  [SonataCacheBundle]
-      git=git://github.com/sonata-project/SonataCacheBundle.git
-      target=/bundles/Sonata/CacheBundle
-      version=origin/2.0
+.. code-block:: yaml
 
-  [SonatajQueryBundle]
-      git=http://github.com/sonata-project/SonatajQueryBundle.git
-      target=/bundles/Sonata/jQueryBundle
+    # app/config/config.yml
+    sonata_block:
+        default_contexts: [cms]
+        blocks:
+            sonata.admin.block.admin_list:
+                contexts:   [admin]
 
-  [KnpMenuBundle]
-      git=http://github.com/KnpLabs/KnpMenuBundle.git
-      target=/bundles/Knp/Bundle/MenuBundle
+            sonata.block.service.text:
+            sonata.block.service.action:
+            sonata.block.service.rss:
 
-  [KnpMenu]
-      git=http://github.com/KnpLabs/KnpMenu.git
-      target=/knp/menu
-
-  [Exporter]
-      git=http://github.com/sonata-project/exporter.git
-      target=/exporter
-
-and run the vendors script to download bundles::
+and finally run the vendors script to download bundles::
 
   php bin/vendors install
 
-Next, be sure to enable this bundles in your autoload.php and AppKernel.php
-files:
+Next, be sure to enable this bundle in your autoload.php (if it is not already
+in there) and AppKernel.php files:
 
 .. code-block:: php
 
@@ -69,9 +71,6 @@ files:
     $loader->registerNamespaces(array(
         // ...
         'Sonata'     => __DIR__.'/../vendor/bundles',
-        'Exporter'   => __DIR__.'/../vendor/exporter/lib',
-        'Knp\Bundle' => __DIR__.'/../vendor/bundles',
-        'Knp\Menu'   => __DIR__.'/../vendor/knp/menu/src',
         // ...
     ));
 
@@ -81,10 +80,6 @@ files:
         return array(
             // ...
             new Sonata\AdminBundle\SonataAdminBundle(),
-            new Sonata\BlockBundle\SonataBlockBundle(),
-            new Sonata\CacheBundle\SonataCacheBundle(),
-            new Sonata\jQueryBundle\SonatajQueryBundle(),
-            new Knp\Bundle\MenuBundle\KnpMenuBundle(),
             // ...
         );
     }
@@ -93,11 +88,10 @@ Now, install the assets from the bundles::
 
     php app/console assets:install web
 
-Usually when installing new bundles a good practice is also to delete your cache::
+Usually when installing new bundles a good practice is to also delete your cache::
 
     php app/console cache:clear
 
 After you have successfully installed above bundles you need to configure
 SonataAdminBundle for administering your models. All that is needed to quickly
-set up SonataAdminBundle is described in the next chapter the Getting started
-with SonataAdminBundle.
+set up SonataAdminBundle is described in the next chapter : :doc:`getting_started`.

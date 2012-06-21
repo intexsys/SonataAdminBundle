@@ -81,7 +81,8 @@ var Admin = {
      * @param subject
      */
     add_collapsed_toggle: function(subject) {
-        jQuery('fieldset.sonata-ba-fielset-collapsed div.sonata-ba-collapsed-fields').hide();
+        jQuery('fieldset.sonata-ba-fielset-collapsed').has('.error').addClass('sonata-ba-collapsed-fields-close');
+        jQuery('fieldset.sonata-ba-fielset-collapsed div.sonata-ba-collapsed-fields').not(':has(.error)').hide();
         jQuery('fieldset legend a.sonata-ba-collapsed', subject).live('click', function(event) {
             event.preventDefault();
 
@@ -157,12 +158,16 @@ var Admin = {
             var proto = container.attr('data-prototype');
             proto = proto.replace(/\$\$name\$\$/g, container.children().length);
             jQuery(proto).insertBefore(jQuery(this).parent());
+            
+            jQuery(this).trigger('sonata-collection-item-added');
         });
 
         jQuery(subject).on('click', '.sonata-collection-delete', function(event) {
             Admin.stopEvent(event);
 
             jQuery(this).closest('.sonata-collection-row').remove();
+            
+            jQuery(this).trigger('sonata-collection-item-deleted');
         });
     }
 }
