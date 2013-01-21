@@ -5,6 +5,7 @@ jQuery(document).ready(function() {
     Admin.add_filters(document);
     Admin.set_object_field_value(document);
     Admin.setup_collection_buttons(document);
+    Admin.setup_per_page_switcher(document);
 });
 
 var Admin = {
@@ -175,6 +176,12 @@ var Admin = {
             jQuery(this).closest('.sonata-collection-row').remove();
             
             jQuery(this).trigger('sonata-collection-item-deleted');
+        });
+    },
+
+    setup_per_page_switcher: function(subject) {
+        jQuery('select.per-page-options').on('change', function(event) {
+            window.top.location.href = this.options[this.selectedIndex].value;
         });
     }
 }

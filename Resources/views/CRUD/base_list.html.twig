@@ -123,6 +123,22 @@ file that was distributed with this source code.
                             </td>
                         </tr>
                     {% endif %}
+
+                    <tr>
+                        <td colspan="{{ admin.list.elements|length }}" class="">
+                            <div class="per-page">
+                                <label for="per-page-option">{% trans from 'SonataAdminBundle' %}label_per_page{% endtrans %}</label>
+                                <select class="per-page-options" name="per-page-option">
+                                    {% for per_page in admin.getperpageoptions %}
+                                        <option {% if per_page == admin.datagrid.pager.maxperpage %}selected="selected"{% endif %}
+                                                value="{{ admin.generateUrl('list', {'filter': admin.datagrid.values | merge({'_per_page': per_page})}) }}">
+                                            {{ per_page }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
                 {% endblock %}
             </table>
 

@@ -100,7 +100,7 @@ class Datagrid implements DatagridInterface
         }
 
         $this->formBuilder->add('_sort_by', 'hidden');
-        $this->formBuilder->get('_sort_by')->appendClientTransformer(new CallbackTransformer(
+        $this->formBuilder->get('_sort_by')->addViewTransformer(new CallbackTransformer(
             function($value) {
                 return $value;
             },
@@ -114,6 +114,7 @@ class Datagrid implements DatagridInterface
         ));
         $this->formBuilder->add('_sort_order', 'hidden');
         $this->formBuilder->add('_page', 'hidden');
+        $this->formBuilder->add('_per_page', 'hidden');
 
         $this->form = $this->formBuilder->getForm();
         $this->form->bind($this->values);
@@ -136,6 +137,7 @@ class Datagrid implements DatagridInterface
             }
         }
 
+        $this->pager->setMaxPerPage(isset($this->values['_per_page']) ? $this->values['_per_page'] : 25);
         $this->pager->setPage(isset($this->values['_page']) ? $this->values['_page'] : 1);
         $this->pager->setQuery($this->query);
         $this->pager->init();

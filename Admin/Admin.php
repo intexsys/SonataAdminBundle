@@ -188,6 +188,7 @@ abstract class Admin implements AdminInterface, DomainObjectInterface
      */
     protected $datagridValues = array(
         '_page'       => 1,
+        '_per_page'   => 25,
     );
 
     /**
@@ -415,6 +416,19 @@ abstract class Admin implements AdminInterface, DomainObjectInterface
     protected $securityInformation = array();
 
     /**
+     * Predefined per page options
+     *
+     * @var array
+     */
+    protected $perPageOptions = array(
+        25,
+        50,
+        100,
+        150,
+        200,
+     );
+
+    /**
      * {@inheritdoc}
      */
     protected function configureFormFields(FormMapper $form)
@@ -534,6 +548,8 @@ abstract class Admin implements AdminInterface, DomainObjectInterface
         $this->baseCodeRoute = $this->getCode();
 
         $this->configure();
+
+        $this->predefinePerPageOptions();
     }
 
     /**
@@ -707,6 +723,10 @@ abstract class Admin implements AdminInterface, DomainObjectInterface
                 $filters
             );
 
+            if (!$this->determinedPerPageValue($parameters['_per_page'])) {
+                $parameters['_per_page'] = $this->maxPerPage;
+            }
+
             // always force the parent value
             if ($this->isChild() && $this->getParentAssociationMapping()) {
                 $parameters[$this->getParentAssociationMapping()] = array('value' => $this->request->get($this->getParent()->getIdParameter()));
@@ -745,7 +765,6 @@ abstract class Admin implements AdminInterface, DomainObjectInterface
         // initialize the datagrid
         $this->datagrid = $this->getDatagridBuilder()->getBaseDatagrid($this, $filterParameters);
 
-        $this->datagrid->getPager()->setMaxPerPage($this->maxPerPage);
         $this->datagrid->getPager()->setMaxPageLinks($this->maxPageLinks);
 
         $mapper = new DatagridMapper($this->getDatagridBuilder(), $this->datagrid, $this);
@@ -2532,5 +2551,52 @@ abstract class Admin implements AdminInterface, DomainObjectInterface
     public function supportsPreviewMode()
     {
         return $this->supportsPreviewMode;
+    }
+
+    /**
+    * Set custom per page options
+    *
+    * @param $options
+    */
+    public function setPerPageOptions($options)
+    {
+        $this->perPageOptions = $options;
+    }
+
+    /**
+     * Returns predefined per page options
+     *
+     * @return array
+     */
+    public function getPerPageOptions()
+    {
+        return $this->perPageOptions;
+    }
+
+    /**
+     * Returns true if the per page value is allowed, false otherwise
+     *
+     * @param $perPage
+     *
+     * @return bool
+     */
+    public function determinedPerPageValue($perPage)
+    {
+        return in_array($perPage, $this->perPageOptions);
+    }
+
+    /**
+     * Predefine per page options
+     *
+     * @return void
+     */
+    public function predefinePerPageOptions()
+    {
+        $this->datagridValues['_per_page'] = $this->maxPerPage;
+
+        if (!in_array($this->maxPerPage, $this->perPageOptions)) {
+            array_unshift($this->perPageOptions, $this->maxPerPage);
+            sort($this->perPageOptions);
+        }
     }
 }
