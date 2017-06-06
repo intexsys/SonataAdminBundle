@@ -97,7 +97,7 @@ class FormTypeFieldExtension extends AbstractTypeExtension
             $baseName = str_replace('.', '_', $view->parent->vars['sonata_admin_code']);
 
             $baseType = $blockPrefixes[count($blockPrefixes) - 2];
-            $blockSuffix = preg_replace('#^_([a-z0-9]{14})_(.++)$#', '$2', array_pop($blockPrefixes));
+            $blockSuffix = preg_replace('#^_([a-z0-9]{14})_(.++)$#', '$2', $blockPrefixes[count($blockPrefixes) - 1]);
 
             $blockPrefixes[] = sprintf('%s_%s', $baseName, $baseType);
             $blockPrefixes[] = sprintf('%s_%s_%s_%s', $baseName, $baseType, $view->parent->vars['name'], $view->vars['name']);
